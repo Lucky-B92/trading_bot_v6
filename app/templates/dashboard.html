@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row gx-3 gy-3 mb-4">
+    <!-- Painel de Status e Performance -->
+    <div class="col-12">
+        <div class="card dark-card h-100 mb-4">
+            <div class="card-header">
+                <h5>Status do Bot</h5>
+            </div>
+            <div class="card-body">
+                <div id="status-panel">
+                    <div class="status-item">
+                        <span class="label">Status:</span>
+                        <span id="bot-active-status" class="value">Inativo</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Último Ciclo:</span>
+                        <span id="last-cycle" class="value">N/A</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Operações Ativas:</span>
+                        <span id="active-operations" class="value">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="label">Horário Bloqueado:</span>
+                        <span id="blocked-time" class="value">Não</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-4">
+    <div class="col-12">
+        <div class="card dark-card h-100 mb-4">
+            <div class="card-header">
+                <h5>Performance</h5>
+            </div>
+            <div class="card-body">
+                <div class="performance-item">
+                    <span class="label">Lucro Total:</span>
+                    <span id="total-pnl" class="value positive">$0.00</span>
+                </div>
+                <div class="performance-item">
+                    <span class="label">Taxa de Acerto:</span>
+                    <span id="win-rate" class="value">0%</span>
+                </div>
+                <div class="performance-item">
+                    <span class="label">Melhor Trade:</span>
+                    <span id="best-trade" class="value positive">$0.00</span>
+                </div>
+                <div class="performance-item">
+                    <span class="label">Pior Trade:</span>
+                    <span id="worst-trade" class="value negative">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Gráficos: Evolução da Banca e Trades Fechados -->
+       <div class="row gx-3 gy-3  mb-4">
+            <div class="col-12">
+                <div class="card dark-card h-100">
+                    <div class="card-header">
+                        <h5>Evolução da Banca</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="equity-chart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+       </div>
+
+
+<div class="row gx-3 gy-3 mb-4">
+    <!-- Operações Abertas - Detalhamento -->
+    <div class="col-12">
+        <div class="card dark-card h-100">
+            <div class="card-header">
+                <h5>Operações Abertas - Detalhamento</h5>
+            </div>
+            <div class="card-body">
+                <table class="open-trades-table">
+                    <thead>
+                        <tr>
+                            <th>Ativo</th>
+                            <th>Lado</th>
+                            <th>Preço Entrada</th>
+                            <th>Preço Atual</th>
+                            <th>Lucro/Prejuízo (%)</th>
+                            <th>Lucro/Prejuízo (USDT)</th>
+                            <th>SL Atual</th>
+                            <th>Potential Profit</th>
+                            <th>Potential Loss</th>
+                            <th>Expected Days</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row gx-3 gy-3 mb-4">
+    <div class="col-lg-6 col-md-12">
+        <div class="card dark-card h-100">
+            <div class="card-header">
+                <h5>Insights Estratégicos</h5>
+            </div>
+            <div class="card-body insights-container">
+                <div id="insights-content">Insight do GPT</div>
+                <button id="refresh-insights" class="btn btn-primary mt-3">Atualizar Insights</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-3 gy-3 mb-4">
+    <!-- Logs do Sistema -->
+    <div class="col-12">
+        <div class="card dark-card h-100">
+            <div class="card-header">
+                <h5>Logs do Sistema</h5>
+            </div>
+            <div class="card-body">
+                <div id="logs-container" class="logs-container">
+                    <div class="loading">Carregando logs...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,422 @@
+:root {
+    --bg-primary: #121212;
+    --bg-secondary: #1E1E1E;
+    --bg-tertiary: #2D2D2D;
+    --text-primary: #ECEFF1;
+    --text-secondary: #B0BEC5;
+    --accent-purple: #BB86FC;
+    --accent-cyan: #03DAC6;
+    --accent-red: #CF6679;
+}
+
+body.dark-theme {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.dark-card {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: 8px;
+}
+
+.card-header {
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-indicator.active {
+    background-color: var(--accent-cyan);
+    box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.status-indicator.inactive {
+    background-color: var(--accent-red);
+}
+
+.status-item {
+    margin-bottom: 12px;
+}
+
+.status-item .label {
+    color: var(--text-secondary);
+    margin-right: 8px;
+}
+
+.status-item .value {
+    font-weight: 500;
+}
+
+.performance-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.performance-item .label {
+    color: var(--text-secondary);
+}
+
+.performance-item .value {
+    font-weight: 500;
+}
+
+.positive {
+    color: var(--accent-cyan);
+}
+
+.negative {
+    color: var(--accent-red);
+}
+
+.warning {
+    color: var(--accent-red);
+    font-weight: bold;
+}
+
+.insights-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Estilos para os gráficos */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Estilos para a página de configurações */
+.dark-alert {
+    background-color: #1E1E1E;
+    border-color: #BB86FC;
+    color: #ECEFF1;
+}
+
+.form-range.dark-input::-webkit-slider-thumb {
+    background: #BB86FC;
+}
+
+.form-range.dark-input::-moz-range-thumb {
+    background: #BB86FC;
+}
+
+.form-check-input.dark-input {
+    background-color: #2D2D2D;
+    border-color: #BB86FC;
+}
+
+.form-check-input.dark-input:checked {
+    background-color: #BB86FC;
+    border-color: #BB86FC;
+}
+
+/* Sliders personalizados */
+.dark-slider::-webkit-slider-thumb {
+    background: #BB86FC;
+    box-shadow: 0 0 5px rgba(187, 134, 252, 0.8);
+}
+
+.dark-slider::-moz-range-thumb {
+    background: #BB86FC;
+}
+
+.dark-slider::-webkit-slider-runnable-track {
+    background: #2D2D2D;
+}
+
+/* Switch personalizado */
+.form-switch .form-check-input.dark-input {
+    background-color: #2D2D2D;
+    border-color: #BB86FC;
+}
+
+.form-switch .form-check-input.dark-input:checked {
+    background-color: #BB86FC;
+}
+
+/* Toasts de notificação */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 250px;
+}
+
+/* Estilos para gráficos */
+canvas {
+    max-height: 100%;
+    width: 100% !important;
+}
+
+.chart-error {
+    color: #CF6679;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+}
+
+.card-body {
+    position: relative;
+    min-height: 200px;
+}
+
+/* Estilos para a tabela de logs - Mantendo a identidade visual */
+.logs-container {
+    background: #1E1E1E;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+    color: #ECEFF1;
+}
+
+.logs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.open-trades-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 0.5rem;
+}
+
+.open-trades-table th, .open-trades-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.open-trades-table th {
+    background-color: var(--bg-tertiary);
+}
+
+.open-trades-table .positive {
+    color: var(--accent-cyan);
+}
+
+.open-trades-table .negative {
+    color: var(--accent-red);
+}
+
+.open-trades-table .action-button {
+    background-color: var(--accent-purple);
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.open-trades-table .action-button:hover {
+    background-color: rgba(187, 134, 252, 0.8);
+}
+
+
+.logs-table th {
+    text-align: left;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #BB86FC;
+}
+
+.logs-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.log-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.log-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.log-info .log-badge { background: rgba(3, 218, 198, 0.2); color: #03DAC6; }
+.log-warning .log-badge { background: rgba(255, 193, 7, 0.2); color: #FFC107; }
+.log-error .log-badge { background: rgba(207, 102, 121, 0.2); color: #CF6679; }
+.log-success .log-badge { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+
+.no-logs, .logs-error {
+    text-align: center;
+    padding: 20px;
+    color: #ECEFF1;
+    opacity: 0.8;
+}
+
+/* ===== NOVOS ESTILOS ADICIONADOS ===== */
+/* Garante o mesmo espaçamento das seções superiores */
+.dashboard-section {
+    margin-bottom: 1.5rem; /* Igual ao mb-4 do Bootstrap */
+}
+
+/* ===== Estilos para a Seção de Timeframes e Indicadores ===== */
+.settings-container {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.settings-container .form-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.settings-container .form-select,
+.settings-container .form-control {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
+    color: var(--text-primary);
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.settings-container .form-select:focus,
+.settings-container .form-control:focus {
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 8px rgba(187, 134, 252, 0.5);
+}
+
+.settings-container .form-select:disabled,
+.settings-container .form-control:disabled {
+    background-color: var(--bg-tertiary);
+    opacity: 0.6;
+}
+
+.settings-container .btn-primary {
+    background-color: var(--accent-purple);
+    border: none;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.settings-container .btn-primary:hover {
+    background-color: rgba(187, 134, 252, 0.8);
+}
+
+.settings-container .form-header {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+/* Espaçamento entre os elementos */
+.row.gx-3 {
+    gap: 1.5rem; /* Espaçamento horizontal */
+}
+
+.row.gy-3 {
+    row-gap: 1.5rem; /* Espaçamento vertical */
+}
+
+/* Garantir altura uniforme para todos os cards */
+.card.dark-card.h-100 {
+    min-height: 250px;
+}
+
+/* Ajuste fino para manter altura dos gráficos */
+.card.dark-card .card-body canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+
+/* Ajuste fino para telas menores */
+@media (max-width: 992px) {
+    .dashboard-section .card {
+        margin-bottom: 1.5rem; /* Espaçamento igual ao original */
+    }
+    
+    /* Remove margem extra do container de logs */
+    .logs-container {
+        margin-top: 0;
+    }
+}
+
+/* Garante altura uniforme nos cards pares */
+.h-100 {
+    height: 100%;
+}
+
+/* Ajustes específicos para as tabelas Top Ativos e Insights */
+@media (max-width: 992px) {
+    /* Margem inferior apenas para telas menores */
+    .card.dark-card {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    /* Remove margem extra do último card */
+    .card.dark-card:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Ajuste específico para a tabela de Logs em telas pequenas */
+@media (max-width: 992px) {
+    #logs-container {
+        margin-top: 1.5rem;  /* Espaçamento igual ao usado em outras seções */
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 15px;
+        margin-bottom: 1rem;
+    }
+
+    .settings-container .btn-primary {
+        width: 100%;
+        padding: 12px;
+    }
+}
+
+/* Ajustes responsivos */
+@media (max-width: 992px) {
+    .col-lg-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .col-lg-8 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+/* Ajustes para telas muito pequenas */
+@media (max-width: 576px) {
+    .card.dark-card {
+        margin-bottom: 1rem;
+    }
+}
+

@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Seção de Configurações de Risco -->
+    <div class="col-md-6">
+        <div class="card dark-card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt me-2"></i>Configurações de Risco</h5>
+            </div>
+            <div class="card-body">
+                <form id="risk-settings-form">
+                    <div class="mb-3">
+                        <label for="stop-loss" class="form-label">Stop Loss (%)</label>
+                        <input type="number" step="0.1" class="form-control dark-input" 
+                               id="stop-loss" min="0.1" max="20" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="take-profit" class="form-label">Take Profit (%)</label>
+                        <input type="number" step="0.1" class="form-control dark-input" 
+                               id="take-profit" min="1" max="100" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="max-capital" class="form-label">Capital por Trade (%)</label>
+                        <input type="number" step="1" class="form-control dark-input" 
+                               id="max-capital" min="1" max="100" required>
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        <input type="checkbox" class="form-check-input dark-input" id="enable-short">
+                        <label class="form-check-label" for="enable-short">Ativar Vendas a Descoberto</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Salvar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção de Horário de Operação -->
+    <div class="col-md-6">
+        <div class="card dark-card mb-4">
+            <div class="card-header">
+                <h5><i class="fas fa-clock me-2"></i>Horário de Operação</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning dark-alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    O bot não opera entre <span id="current-block-time">20:00 - 02:00</span>
+                </div>
+                <form id="schedule-form">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label">Início do Bloqueio</label>
+                            <input type="time" class="form-control dark-input" id="block-start" required>
+                        </div>
+                        <div class="col">
+                            <label class="form-label">Fim do Bloqueio</label>
+                            <input type="time" class="form-control dark-input" id="block-end" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-clock me-1"></i> Atualizar Horário
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seção de Configurações do Modelo -->
+        <!-- Seção de Configurações do Modelo de ML -->
+<div class="card dark-card mt-4">
+    <div class="card-header">
+        <h5><i class="fas fa-brain me-2"></i> Modelo de ML</h5>
+    </div>
+    <div class="card-body">
+        <form id="model-settings-form">
+            <div class="mb-3">
+                <label for="rsi-weight" class="form-label">Peso do RSI</label>
+                <input type="number" class="form-control dark-input" id="rsi-weight" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            <div class="mb-3">
+                <label for="macd-weight" class="form-label">Peso do MACD</label>
+                <input type="number" class="form-control dark-input" id="macd-weight" min="0" max="1" step="0.1" value="0.5">
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-1"></i> Salvar Modelo
+            </button>
+        </form>
+    </div>
+</div>
+
+        <!-- Seção de Configurações de Timeframes e Indicadores -->
+        <div class="card dark-card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-cogs me-2"></i> Configurações de Timeframes e Indicadores</h5>
+            </div>
+            <div class="card-body">
+                <form id="timeframe-settings-form">
+                    <div class="mb-3">
+                        <label for="primary-timeframe" class="form-label">Timeframe Primário</label>
+                        <select class="form-select dark-input" id="primary-timeframe">
+                            <option value="15m">15 Minutos</option>
+                            <option value="1h">1 Hora</option>
+                            <option value="4h">4 Horas</option>
+                            <option value="1d">1 Dia</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmation-timeframe" class="form-label">Timeframe de Confirmação</label>
+                        <select class="form-select dark-input" id="confirmation-timeframe">
+                            <option value="1h">1 Hora</option>
+                            <option value="4h">4 Horas</option>
+                            <option value="1d">1 Dia</option>
+                        </select>
+                    </div>
+
+                    <h6 class="mb-3">Indicadores</h6>
+                    <div class="mb-3">
+                        <label for="ema-short" class="form-label">EMA Curta (Períodos)</label>
+                        <input type="number" class="form-control dark-input" id="ema-short" min="1" max="50" value="8">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rsi-period" class="form-label">RSI (Períodos)</label>
+                        <input type="number" class="form-control dark-input" id="rsi-period" min="1" max="50" value="10">
+                    </div>
+                    <div class="mb-3">
+                        <label for="macd-fast" class="form-label">MACD Rápido</label>
+                        <input type="number" class="form-control dark-input" id="macd-fast" min="1" max="50" value="8">
+                    </div>
+                    <div class="mb-3">
+                        <label for="macd-slow" class="form-label">MACD Lento</label>
+                        <input type="number" class="form-control dark-input" id="macd-slow" min="1" max="50" value="21">
+                    </div>
+                    <div class="mb-3">
+                        <label for="macd-signal" class="form-label">MACD Sinal</label>
+                        <input type="number" class="form-control dark-input" id="macd-signal" min="1" max="20" value="5">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Salvar Configurações
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Carrega configurações ao abrir a página
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/get_settings')
+        .then(response => response.json())
+        .then(data => {
+            // Configurações de Risco
+            document.getElementById('stop-loss').value = data.risk.stop_loss;
+            document.getElementById('take-profit').value = data.risk.take_profit;
+            document.getElementById('max-capital').value = data.risk.max_capital;
+            document.getElementById('enable-short').checked = data.risk.enable_short;
+
+            // Horário de Operação
+            document.getElementById('block-start').value = data.schedule.block_start;
+            document.getElementById('block-end').value = data.schedule.block_end;
+            document.getElementById('current-block-time').textContent = 
+                `${data.schedule.block_start} - ${data.schedule.block_end}`;
+
+            // Modelo de ML
+            document.getElementById('rsi-weight').value = data.model.rsi_weight;
+            document.getElementById('rsi-value').textContent = data.model.rsi_weight;
+            document.getElementById('macd-weight').value = data.model.macd_weight;
+            document.getElementById('macd-value').textContent = data.model.macd_weight;
+        });
+
+    // Atualiza valores dos sliders em tempo real
+    document.getElementById('rsi-weight').addEventListener('input', function() {
+        document.getElementById('rsi-value').textContent = this.value;
+    });
+    document.getElementById('macd-weight').addEventListener('input', function() {
+        document.getElementById('macd-value').textContent = this.value;
+    });
+
+    // Configura handlers para os formulários
+    setupFormHandler('risk-settings-form', 'risk');
+    setupFormHandler('schedule-form', 'schedule');
+    setupFormHandler('model-settings-form', 'model');
+});
+
+function setupFormHandler(formId, type) {
+    document.getElementById(formId).addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = {};
+        if (type === 'risk') {
+            formData.stop_loss = parseFloat(this.elements['stop-loss'].value);
+            formData.take_profit = parseFloat(this.elements['take-profit'].value);
+            formData.max_capital = parseFloat(this.elements['max-capital'].value);
+            formData.enable_short = this.elements['enable-short'].checked;
+        } 
+        else if (type === 'schedule') {
+            formData.block_start = this.elements['block-start'].value;
+            formData.block_end = this.elements['block-end'].value;
+        }
+        else if (type === 'model') {
+            formData.rsi_weight = parseInt(this.elements['rsi-weight'].value);
+            formData.macd_weight = parseInt(this.elements['macd-weight'].value);
+        }
+
+        fetch('/update_settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, settings: formData })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Configurações salvas com sucesso!', 'success');
+            } else {
+                showToast(`Erro: ${data.error || 'Falha ao salvar'}`, 'danger');
+            }
+        });
+    });
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast show align-items-center text-white bg-${type}`;
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Carregar configurações ao abrir a página
+        fetch('/get_settings')
+            .then(response => response.json())
+            .then(data => {
+                // Timeframes
+                document.getElementById('primary-timeframe').value = data.timeframes.primary;
+                document.getElementById('confirmation-timeframe').value = data.timeframes.confirmation;
+    
+                // Indicadores
+                document.getElementById('ema-short').value = data.model.ema_short;
+                document.getElementById('rsi-period').value = data.model.rsi;
+                document.getElementById('macd-fast').value = data.model.macd_fast;
+                document.getElementById('macd-slow').value = data.model.macd_slow;
+                document.getElementById('macd-signal').value = data.model.macd_signal;
+            });
+    
+        // Envio do formulário de timeframes e indicadores
+        document.getElementById('timeframe-settings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+    
+            const settings = {
+                primary: document.getElementById('primary-timeframe').value,
+                confirmation: document.getElementById('confirmation-timeframe').value,
+                ema_short_period: parseInt(document.getElementById('ema-short').value),
+                rsi_period: parseInt(document.getElementById('rsi-period').value),
+                macd_fast: parseInt(document.getElementById('macd-fast').value),
+                macd_slow: parseInt(document.getElementById('macd-slow').value),
+                macd_signal: parseInt(document.getElementById('macd-signal').value)
+            };
+    
+            fetch('/update_settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'model', settings })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Configurações salvas com sucesso!', 'success');
+                } else {
+                    showToast(`Erro: ${data.error}`, 'danger');
+                }
+            });
+        });
+    });
+    </script>
+    
+{% endblock %}

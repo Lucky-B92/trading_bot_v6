@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Trading Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body class="dark-theme">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Crypto Trading Bot</a>
+    
+            <div class="d-flex align-items-center">
+                <!-- Link para Configurações -->
+                <a href="/settings" class="btn btn-outline-light me-3">Configurações</a>
+    
+                <!-- Bot Status e Botão de Ativação -->
+                <div id="bot-status" class="me-3">
+                    <span class="status-indicator inactive"></span>
+                    <span class="status-text">Inativo</span>
+                </div>
+                <button id="toggle-bot" class="btn btn-outline-light">Iniciar Bot</button>
+            </div>
+        </div>
+    </nav>
+    
+
+    <div class="container-fluid mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

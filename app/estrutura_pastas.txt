@@ -1,0 +1,39 @@
+Listagem de caminhos de pasta para o volume Acer
+O número de série do volume é C853-F73A
+C:.
+¦   app.py
+¦   config.py
+¦   database.py
+¦   estrutura_pastas.txt
+¦   ml_trainer.py
+¦   pattern_detector.py
+¦   performance_analysis.py
+¦   trading_logic.py
+¦   utils.py
+¦   __init__.py
+¦   
++---backups
++---models
++---static
+¦   +---css
+¦   ¦       styles.css
+¦   ¦       
+¦   +---js
+¦           chart.js
+¦           main.js
+¦           
++---templates
+¦       base.html
+¦       dashboard.html
+¦       settings.html
+¦       
++---__pycache__
+        app.cpython-311.pyc
+        config.cpython-311.pyc
+        database.cpython-311.pyc
+        ml_trainer.cpython-311.pyc
+        pattern_detector.cpython-311.pyc
+        performance_analysis.cpython-311.pyc
+        trading_logic.cpython-311.pyc
+        __init__.cpython-311.pyc
+        
