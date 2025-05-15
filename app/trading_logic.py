@@ -202,7 +202,8 @@ class TradingBot:
                         patterns,
                         ml_score,
                         ema8_daily=confirmation_data['ema8_daily'],
-                        rsi_daily=confirmation_data['rsi_daily']
+                        rsi_daily=confirmation_data['rsi_daily'],
+                        potential_profit_pct=potential_profit_pct
                     )
 
                     return {
@@ -240,7 +241,7 @@ class TradingBot:
             return []
 
             
-    def calculate_score(self, rsi, macd, regime, patterns, ml_score, ema8_daily=None, rsi_daily=None):
+    def calculate_score(self, rsi, macd, regime, patterns, ml_score, ema8_daily=None, rsi_daily=None, potential_profit_pct=0):
         # Garantir que todos os valores sejam escalares
         rsi = float(rsi)
         macd = float(macd)
@@ -254,6 +255,7 @@ class TradingBot:
         ml_score_norm = ml_score
         rsi_daily_norm = np.clip((rsi_daily - 30) / (70 - 30), 0, 1)
         ema8_daily_norm = 1 if ema8_daily > rsi_daily else 0
+        profit_norm = np.clip(potential_profit_pct / 15, 0, 1)
 
         # Peso do regime
         regime_score = {
@@ -280,11 +282,13 @@ class TradingBot:
             'rsi': 0.1,
             'macd': 0.1,
             'regime': 0.15,
-            'patterns': 0.3,
+            'patterns': 0.25,
             'ml': 0.15,
             'ema8_daily': 0.1,
-            'rsi_daily': 0.1
+            'rsi_daily': 0.1,
+            'profit': 0.05  # novo peso
         }
+
         
         # Cálculo final ponderado
         score = (
@@ -294,7 +298,8 @@ class TradingBot:
             pattern_score * weights['patterns'] +
             ml_score_norm * weights['ml'] +
             ema8_daily_norm * weights['ema8_daily'] +
-            rsi_daily_norm * weights['rsi_daily']
+            rsi_daily_norm * weights['rsi_daily'] +
+            profit_norm * weights['profit']  # novo fator
         )
         
         return score * 100  # Retorna entre 0-100
@@ -334,6 +339,7 @@ class TradingBot:
                     trade_data = dict(trade_data)
 
                     # Realizar a venda
+                    amount = trade_data['amount']  # <-- CORREÇÃO AQUI
                     order = self.client.order_market_sell(symbol=symbol, quantity=amount)
                     self.log(f"Ordem de fechamento executada: {symbol} - {amount} unidades @ {price:.4f}", "info")
 
@@ -358,6 +364,15 @@ class TradingBot:
             df = self.get_market_data(symbol, interval='1d', limit=100)
             atr = self._calculate_atr(df).iloc[-1] if not df.empty else None
             resistances = self.get_resistance_levels(symbol, interval='1d', limit=100)
+            next_resistance = next((res for res in resistances if res > price), None)
+
+            if next_resistance:
+                potential_profit_pct = (next_resistance - price) / price * 100
+            else:
+                # fallback: usar ATR se não houver resistência clara
+                df = self.get_market_data(symbol, interval='1d', limit=100)
+                atr = self._calculate_atr(df).iloc[-1] if not df.empty else 0
+                potential_profit_pct = (atr / price) * 100 if atr else 0
 
             # Calcular o amount em unidades com base no valor em USDT
             amount_in_usdt = config.TRADE_AMOUNT
@@ -720,7 +735,7 @@ class TradingBot:
                             patterns=patterns,
                             ml_score=ml_score,
                             ema8_daily=asset.get('ema8_daily'),
-                            rsi_daily=asset.get('rsi_daily')
+                            rsi_daily=asset.get('rsi_daily'),
                         )
 
 

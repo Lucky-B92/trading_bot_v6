@@ -122,6 +122,15 @@ def init_db():
                 source TEXT NOT NULL,
                 implemented BOOLEAN DEFAULT 0
             )''')
+
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS insights (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                content TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            ''')
+
             
             default_settings = {
                 'STOP_LOSS': '0.05',
