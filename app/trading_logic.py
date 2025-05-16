@@ -107,6 +107,17 @@ class TradingBot:
         rs = avg_gain / avg_loss
         return 100 - (100 / (1 + rs))
 
+    def calculate_fibonacci_levels(self, swing_low, swing_high):
+        """Calcula os níveis Fibonacci para um movimento dado."""
+        levels = {
+            '0.618': swing_low + (swing_high - swing_low) * 0.618,
+            '1.618': swing_low + (swing_high - swing_low) * 1.618,
+            '2.618': swing_low + (swing_high - swing_low) * 2.618,
+            '3.618': swing_low + (swing_high - swing_low) * 3.618
+        }
+        return levels
+
+
     def _calculate_macd(self, close_series, fast=12, slow=26, signal=9):
         ema_fast = close_series.ewm(span=fast, adjust=False).mean()
         ema_slow = close_series.ewm(span=slow, adjust=False).mean()
@@ -202,8 +213,7 @@ class TradingBot:
                         patterns,
                         ml_score,
                         ema8_daily=confirmation_data['ema8_daily'],
-                        rsi_daily=confirmation_data['rsi_daily'],
-                        potential_profit_pct=potential_profit_pct
+                        rsi_daily=confirmation_data['rsi_daily']
                     )
 
                     return {
@@ -241,7 +251,7 @@ class TradingBot:
             return []
 
             
-    def calculate_score(self, rsi, macd, regime, patterns, ml_score, ema8_daily=None, rsi_daily=None, potential_profit_pct=0):
+    def calculate_score(self, rsi, macd, regime, patterns, ml_score, risk_reward_ratio=0, ema8_daily=None, rsi_daily=None):
         # Garantir que todos os valores sejam escalares
         rsi = float(rsi)
         macd = float(macd)
@@ -253,9 +263,10 @@ class TradingBot:
         rsi_norm = np.clip((rsi - 30) / (70 - 30), 0, 1)
         macd_norm = np.tanh(macd * 0.1)
         ml_score_norm = ml_score
+        # Normalização da proporção risco/recompensa (1:3 ideal)
+        risk_reward_norm = min(risk_reward_ratio / 3, 1)
         rsi_daily_norm = np.clip((rsi_daily - 30) / (70 - 30), 0, 1)
         ema8_daily_norm = 1 if ema8_daily > rsi_daily else 0
-        profit_norm = np.clip(potential_profit_pct / 15, 0, 1)
 
         # Peso do regime
         regime_score = {
@@ -284,11 +295,10 @@ class TradingBot:
             'regime': 0.15,
             'patterns': 0.25,
             'ml': 0.15,
-            'ema8_daily': 0.1,
-            'rsi_daily': 0.1,
-            'profit': 0.05  # novo peso
+            'risk_reward': 0.15,
+            'ema8_daily': 0.05,
+            'rsi_daily': 0.05
         }
-
         
         # Cálculo final ponderado
         score = (
@@ -297,9 +307,9 @@ class TradingBot:
             regime_score * weights['regime'] +
             pattern_score * weights['patterns'] +
             ml_score_norm * weights['ml'] +
+            risk_reward_norm * weights['risk_reward'] +
             ema8_daily_norm * weights['ema8_daily'] +
-            rsi_daily_norm * weights['rsi_daily'] +
-            profit_norm * weights['profit']  # novo fator
+            rsi_daily_norm * weights['rsi_daily']
         )
         
         return score * 100  # Retorna entre 0-100
@@ -339,7 +349,6 @@ class TradingBot:
                     trade_data = dict(trade_data)
 
                     # Realizar a venda
-                    amount = trade_data['amount']  # <-- CORREÇÃO AQUI
                     order = self.client.order_market_sell(symbol=symbol, quantity=amount)
                     self.log(f"Ordem de fechamento executada: {symbol} - {amount} unidades @ {price:.4f}", "info")
 
@@ -364,15 +373,13 @@ class TradingBot:
             df = self.get_market_data(symbol, interval='1d', limit=100)
             atr = self._calculate_atr(df).iloc[-1] if not df.empty else None
             resistances = self.get_resistance_levels(symbol, interval='1d', limit=100)
-            next_resistance = next((res for res in resistances if res > price), None)
 
-            if next_resistance:
-                potential_profit_pct = (next_resistance - price) / price * 100
-            else:
-                # fallback: usar ATR se não houver resistência clara
-                df = self.get_market_data(symbol, interval='1d', limit=100)
-                atr = self._calculate_atr(df).iloc[-1] if not df.empty else 0
-                potential_profit_pct = (atr / price) * 100 if atr else 0
+            # Cálculo de Fibonacci com base no Swing High/Low
+            swing_high = df['high'].max()
+            swing_low = df['low'].min()
+            fib_levels = self.calculate_fibonacci_levels(swing_low, swing_high)
+
+            self.log(f"Níveis Fibonacci para {symbol}: {fib_levels}")
 
             # Calcular o amount em unidades com base no valor em USDT
             amount_in_usdt = config.TRADE_AMOUNT
@@ -404,23 +411,41 @@ class TradingBot:
             amount_adjusted = round(amount - (amount % step_size), 8)
 
             # Potencial de Lucro/Perda Dinâmico
-            potential_profit = "N/A"
-            potential_loss = "N/A"
+
+            # Cálculo da Proporção Risco/Recompensa
+            risk_reward_ratio = 0
+            if potential_loss != "N/A" and potential_loss != 0:
+                risk_reward_ratio = potential_profit / potential_loss
+
+            # Adicionar ao trade_data
+            trade_data['risk_reward_ratio'] = risk_reward_ratio
+
             expected_duration = "N/A"
 
-            if atr and resistances:
+            if atr:
                 # Usar a resistência mais próxima acima do preço atual como alvo potencial
                 next_resistance = next((res for res in resistances if res > price), None)
 
-                # Se houver resistência, definir como alvo potencial
+                # Inicializar potential_profit e potential_loss
+                potential_loss = (price - stop_loss) * amount_adjusted if stop_loss else "N/A"
+                potential_profit = atr * amount_adjusted  # Fallback inicial
+
+                # Verificar se há resistência próxima
                 if next_resistance:
                     potential_profit = (next_resistance - price) * amount_adjusted
-                else:
-                    # Se não houver resistência próxima, usa o ATR como referência
-                    potential_profit = atr * amount_adjusted
 
-                # Potencial de perda segue o stop_loss inicial
-                potential_loss = (price - stop_loss) * amount_adjusted if stop_loss else "N/A"
+                # Ajustar com Fibonacci
+                fib_target = max(fib_levels['1.618'], fib_levels['2.618'])
+                if fib_target > price:
+                    potential_profit = max(potential_profit, (fib_target - price) * amount_adjusted)
+
+                # Verificação da proporção 1:3
+                if potential_loss != "N/A" and potential_profit < potential_loss * 3:
+                    self.log(f"[ALERTA] Potencial de lucro ({potential_profit}) é inferior à proporção 1:3 em relação à perda ({potential_loss}). Trade não realizado.", "warning")
+                    return False
+
+                self.log(f"Potencial de Lucro: {potential_profit} USDT | Potencial de Perda: {potential_loss} USDT")
+
 
                 # Estimativa de Duração usando ATR
                 target_distance = abs(next_resistance - price) if next_resistance else atr
@@ -488,7 +513,7 @@ class TradingBot:
                     conn = get_db_connection()
                     conn.execute(
                         '''INSERT INTO trades 
-                        (symbol, side, open_price, amount, stop_loss, take_profit, open_time, status, ema8_daily, rsi_daily, potential_profit, potential_loss, expected_duration)
+                        (symbol, side, open_price, amount, stop_loss, take_profit, open_time, status, ema8_daily, rsi_daily, potential_profit, potential_loss, expected_duration, risk_reward_ratio)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (
                             trade_data['symbol'],
@@ -503,7 +528,8 @@ class TradingBot:
                             trade_data['rsi_daily'],
                             trade_data['potential_profit'],
                             trade_data['potential_loss'],
-                            trade_data['expected_duration']
+                            trade_data['expected_duration'],
+                            trade_data['risk_reward_ratio']
                         )
                     )
 
@@ -735,7 +761,7 @@ class TradingBot:
                             patterns=patterns,
                             ml_score=ml_score,
                             ema8_daily=asset.get('ema8_daily'),
-                            rsi_daily=asset.get('rsi_daily'),
+                            rsi_daily=asset.get('rsi_daily')
                         )
 
 
