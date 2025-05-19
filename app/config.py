@@ -74,5 +74,9 @@ class config:
     DEBUG = False
     TESTNET = False  # Usar API de teste da Binance
 
+    # Alternar entre modelo antigo e novo (com novas features)
+    USE_EXTENDED_ML_FEATURES = True
+
+
 
 config = config  # Instância única

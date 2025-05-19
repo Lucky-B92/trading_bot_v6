@@ -282,8 +282,11 @@ class TradingBot:
             'rsi_ok': patterns.get('rsi_ok', 0),
             'above_support': patterns.get('above_support', 0),
             'volume_spike': patterns.get('volume_spike', 0),
-            'bullish_engulfing': patterns.get('bullish_engulfing', 0)
+            'bullish_engulfing': patterns.get('bullish_engulfing', 0),
+            'double_bottom': patterns.get('double_bottom', 0),
+            'morning_star': patterns.get('morning_star', 0)
         }
+
         
         # Padrões atendidos
         pattern_score = sum(pattern_checks.values()) / len(pattern_checks)
@@ -410,16 +413,6 @@ class TradingBot:
             # Ajustar a quantidade para respeitar o step size
             amount_adjusted = round(amount - (amount % step_size), 8)
 
-            # Potencial de Lucro/Perda Dinâmico
-
-            # Cálculo da Proporção Risco/Recompensa
-            risk_reward_ratio = 0
-            if potential_loss != "N/A" and potential_loss != 0:
-                risk_reward_ratio = potential_profit / potential_loss
-
-            # Adicionar ao trade_data
-            trade_data['risk_reward_ratio'] = risk_reward_ratio
-
             expected_duration = "N/A"
 
             if atr:
@@ -438,6 +431,17 @@ class TradingBot:
                 fib_target = max(fib_levels['1.618'], fib_levels['2.618'])
                 if fib_target > price:
                     potential_profit = max(potential_profit, (fib_target - price) * amount_adjusted)
+
+                # Cálculo corrigido da Proporção Risco/Recompensa
+                risk_reward_ratio = 0
+                if potential_loss != "N/A" and potential_loss != 0:
+                    risk_reward_ratio = potential_profit / potential_loss
+
+                # Proteção contra score injustamente penalizado
+                if risk_reward_ratio == 0:
+                    risk_reward_ratio = 1
+
+
 
                 # Verificação da proporção 1:3
                 if potential_loss != "N/A" and potential_profit < potential_loss * 3:
@@ -469,7 +473,8 @@ class TradingBot:
                 'rsi_daily': confirmation_data['rsi_daily'],
                 'potential_profit': potential_profit,
                 'potential_loss': potential_loss,
-                'expected_duration': expected_duration
+                'expected_duration': expected_duration,
+                'risk_reward_ratio': risk_reward_ratio,
             }
 
 

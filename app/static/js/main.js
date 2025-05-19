@@ -135,28 +135,42 @@ document.addEventListener('DOMContentLoaded', function() {
     updateOpenTradesTable();
     
     // Atualizar insights
-    document.getElementById('refresh-insights').addEventListener('click', function() {
+    document.getElementById('refresh-insights').addEventListener('click', function () {
         const insightsContent = document.getElementById('insights-content');
-        insightsContent.innerHTML = "Carregando insights...";
-    
-        fetch('/get_insights')
+        insightsContent.innerHTML = "Gerando insights com IA...";
+
+        fetch('/generate_insights')
             .then(response => response.json())
             .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    let insightsHtml = '';
-                    data.forEach(insight => {
-                        insightsHtml += `<p>${insight.content}</p>`;
-                    });
-                    insightsContent.innerHTML = insightsHtml;
+                if (data.success) {
+                    // Após gerar, faz nova chamada para buscar os dados
+                    fetch('/get_insights')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (Array.isArray(data) && data.length > 0) {
+                                let insightsHtml = '';
+                                data.forEach(insight => {
+                                    insightsHtml += `<p>${insight.content}</p>`;
+                                });
+                                insightsContent.innerHTML = insightsHtml;
+                            } else {
+                                insightsContent.innerHTML = "Nenhum insight disponível.";
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Erro ao buscar insights:', err);
+                            insightsContent.innerHTML = "Erro ao carregar insights.";
+                        });
                 } else {
-                    insightsContent.innerHTML = "Nenhum insight disponível.";
+                    insightsContent.innerHTML = "Erro ao gerar insights: " + data.error;
                 }
             })
             .catch(err => {
-                console.error('Erro ao buscar insights:', err);
-                insightsContent.innerHTML = "Erro ao carregar insights.";
+                console.error('Erro ao gerar insights:', err);
+                insightsContent.innerHTML = "Erro ao gerar insights.";
             });
     });
+
     
 
     // Atualizar configurações de timeframes e indicadores

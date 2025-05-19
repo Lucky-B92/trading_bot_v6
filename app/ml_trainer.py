@@ -92,6 +92,11 @@ class MLTrainer:
             'above_support': (df['close'] > support).astype(int),
             'atr_strength': (df['atr'] > df['atr'].rolling(50).mean()).astype(int),
         })
+
+        # Adiciona os novos padrões como features (fallback = 0)
+        features['double_bottom'] = df['double_bottom'] if 'double_bottom' in df.columns else 0
+        features['morning_star'] = df['morning_star'] if 'morning_star' in df.columns else 0
+
         
         # Ajustar os índices para garantir que sejam idênticos
         last_index = df.index[-1]
@@ -151,7 +156,13 @@ class MLTrainer:
             self.load_model()
         
         # Garantir que temos exatamente 5 features na ordem correta
-        expected_features = ['rsi', 'macd', 'macd_signal', 'ema_cross', 'atr_strength']
+        if config.USE_EXTENDED_ML_FEATURES:
+            expected_features = [
+                'rsi', 'macd', 'macd_signal', 'ema_cross', 'atr_strength',
+                'double_bottom', 'morning_star'
+            ]
+        else:
+            expected_features = ['rsi', 'macd', 'macd_signal', 'ema_cross', 'atr_strength']
         features = features[expected_features].values  # Adicione .values para converter para numpy array
         
         if not hasattr(self, 'is_scaler_fitted') or not self.is_scaler_fitted:

@@ -277,6 +277,25 @@ def register_routes(flask_app):
         except Exception as e:
             app.logger.error(f"Erro em /get_insights: {str(e)}")
             return jsonify({"error": "Internal server error"}), 500
+
+
+    @app.route('/generate_insights')
+    def generate_insights():
+        try:
+            from .performance_analysis import PerformanceAnalyzer
+            analyzer = PerformanceAnalyzer()
+            content = analyzer.generate_gpt_insights()
+
+            conn = get_db_connection()
+            conn.execute('INSERT INTO insights (content) VALUES (?)', (content,))
+            conn.commit()
+            conn.close()
+
+            return jsonify({'success': True})
+        except Exception as e:
+            app.logger.error(f"Erro em /generate_insights: {str(e)}")
+            return jsonify({'success': False, 'error': str(e)}), 500
+
         
     # --- Rotas de Logs ---
     @flask_app.route('/get_system_logs')
