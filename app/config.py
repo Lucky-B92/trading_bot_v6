@@ -59,8 +59,8 @@ class config:
     CYCLE_INTERVAL = 300  # exemplo: 300 segundos = 5 minutos
     
     # Configurações do modelo
-    ML_MODEL_PATH = 'app/models/random_forest.pkl'
-    SCALER_PATH = 'app/models/scaler.pkl'
+    ML_MODEL_PATH = 'app/models/model.joblib'
+    SCALER_PATH = 'app/models/scaler.joblib'
     RETRAIN_INTERVAL = 24  # horas
     
     # Configurações do banco de dados
