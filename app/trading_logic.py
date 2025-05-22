@@ -781,26 +781,14 @@ class TradingBot:
                         ml_score = asset['ml_score']
                         ml_score_check = ml_score > 0.6
 
-                        # Calcular o score composto
-                        score_result = self.calculate_score(
-                            rsi=asset['rsi'],
-                            macd=asset['macd'],
-                            regime=asset['regime'],
-                            patterns=patterns,
-                            ml_score=ml_score,
-                            ema8_daily=asset.get('ema8_daily'),
-                            rsi_daily=asset.get('rsi_daily')
-                        )
-
+                        # Usar o score já calculado (com RR)
+                        score_result = asset['score'] if isinstance(asset['score'], dict) else {'total': asset['score'], 'details': {}}
                         score = score_result['total']
                         details = score_result['details']
 
-
-                        # Novo critério de compra com base no score
-                        score_threshold = config.SCORE_THRESHOLD  # Exemplo: 70
+                        score_threshold = config.SCORE_THRESHOLD
                         conditions_met = score >= score_threshold
 
-                        # Log detalhado com pontuação e dados de confirmação
                         log_message = (
                             f"[SCORE] {asset['symbol']} - Score: {score:.2f} | Threshold: {score_threshold} | Conditions Met: {conditions_met} | "
                             f"RSI: {details['rsi']:.1f} | MACD: {details['macd']:.1f} | Regime: {details['regime']:.1f} | "
@@ -808,8 +796,8 @@ class TradingBot:
                             f"EMA8 Daily: {details['ema8_daily']:.1f} | RSI Daily: {details['rsi_daily']:.1f}"
                         )
 
-
                         self.log(log_message)
+
                 
                 # Atualizar equity no banco de dados
                 self.update_equity()
