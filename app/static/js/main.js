@@ -83,16 +83,20 @@ document.addEventListener('DOMContentLoaded', function() {
                         <tr>
                             <td>${trade.symbol}</td>
                             <td>${trade.side}</td>
-                            <td>${trade.open_price ? trade.open_price.toFixed(4) : 'N/A'}</td>
-                            <td>${trade.current_price !== 'N/A' ? trade.current_price.toFixed(4) : 'N/A'}</td>
-                            <td class="${profitClass}">${trade.profit_pct !== 'N/A' ? trade.profit_pct.toFixed(2) + '%' : 'N/A'}</td>
-                            <td class="${profitClass}">${trade.pnl !== 'N/A' ? trade.pnl.toFixed(2) + ' USDT' : 'N/A'}</td>
-                            <td>${trade.stop_loss !== 'N/A' ? trade.stop_loss.toFixed(4) + ' USDT' : 'N/A'}</td>
-                            <td>${trade.potential_profit !== 'N/A' ? trade.potential_profit.toFixed(2) + ' USDT' : 'N/A'}</td>
-                            <td>${trade.potential_loss !== 'N/A' ? trade.potential_loss.toFixed(2) + ' USDT' : 'N/A'}</td>
-                            <td>${trade.expected_duration !== 'N/A' ? trade.expected_duration + ' dias' : 'N/A'}</td>
+                            <td>${trade.open_price?.toFixed(4) || ''}</td>
+                            <td>${trade.amount?.toFixed(6) || ''}</td>
+                            <td>${trade.stop_loss?.toFixed(4) || ''}</td>
+                            <td>${trade.take_profit?.toFixed(4) || ''}</td>
+                            <td>${trade.open_time || ''}</td>
+                            <td>${trade.ema8_daily?.toFixed(2) || ''}</td>
+                            <td>${trade.rsi_daily?.toFixed(2) || ''}</td>
+                            <td>${trade.potential_profit !== null && trade.potential_profit !== undefined ? trade.potential_profit.toFixed(2) : ''}</td>
+                            <td>${trade.potential_loss !== null && trade.potential_loss !== undefined ? trade.potential_loss.toFixed(2) : ''}</td>
+                            <td>${trade.expected_duration || ''}</td>
+                            <td>${trade.risk_reward_ratio !== null && trade.risk_reward_ratio !== undefined ? trade.risk_reward_ratio.toFixed(2) : ''}</td>
+                            <td>${trade.score !== null && trade.score !== undefined ? trade.score.toFixed(2) : ''}</td>
                             <td>
-                                <button class="btn-sell btn-outline-light" onclick="closeTrade(${trade.id})">Vender</button>
+                                <button onclick="closeTrade('${trade.symbol}')" class="btn btn-danger btn-sm">Vender</button>
                             </td>
                         </tr>
                     `;
