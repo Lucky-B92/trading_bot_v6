@@ -238,7 +238,8 @@ class TradingBot:
                     return {
                         'symbol': symbol,
                         'price': price,
-                        'score': score,
+                        'score': score['total'],  # Garante que só o valor numérico vá para frente
+                        'score_details': score['details'],  # Se quiser salvar para debug ou log
                         'regime': regime,
                         'rsi': df['rsi'].iloc[-1],
                         'macd': df['macd'].iloc[-1],
