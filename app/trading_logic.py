@@ -735,14 +735,13 @@ class TradingBot:
                     patterns = asset['patterns']
                     
                     # Calcular o score composto
-                    score = asset['score']
-
-
-                    # Novo critério de compra com base no score
-                    score_threshold = config.SCORE_THRESHOLD  # Por exemplo, 70
+                    score_result = asset['score'] if isinstance(asset['score'], dict) else {'total': asset['score'], 'details': {}}
+                    score = score_result['total']
+                    score_threshold = config.SCORE_THRESHOLD
                     conditions_met = score >= score_threshold
 
                     self.log(f"[SCORE] {asset['symbol']} - Score: {score:.2f} | Threshold: {score_threshold} | Conditions Met: {conditions_met}")
+
 
                     
                     if conditions_met:
