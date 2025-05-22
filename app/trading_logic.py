@@ -183,6 +183,10 @@ class TradingBot:
                 and not any(x in s['baseAsset'] for x in ['USD', 'BUSD', 'TUSD', 'DAI'])
             ]
 
+            # Remover tokens wrapped indesejados
+            excluded_wrapped = ['WBTCUSDT', 'WBETHUSDT']
+            usdt_pairs = [s for s in usdt_pairs if s not in excluded_wrapped]
+
             try:
                 tickers = self.client.get_ticker()
                 volume_map = {t['symbol']: float(t['quoteVolume']) for t in tickers}
@@ -201,6 +205,9 @@ class TradingBot:
                     price = df['close'].iloc[-1]
                     regime = self.analyze_market_regime(df)
                     patterns = detect_patterns(df)
+                    for k, v in patterns.items():
+                        df[k] = v  # Adiciona os padrões como colunas no df para o modelo ML
+
                     ml_score = predict_with_model(df)
 
                     # Obter dados de confirmação diários
