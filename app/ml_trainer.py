@@ -26,7 +26,7 @@ class MLTrainer:
             self.is_scaler_fitted = False
             
             # Treina com dados dummy iniciais
-            dummy_X = np.random.rand(10, 5)  # 10 amostras, 5 features
+            dummy_X = np.random.rand(10, 7)  # 10 amostras, 7 features
             dummy_y = np.random.randint(0, 2, 10)  # Classes binárias
             self.train_model(dummy_X, dummy_y)
     
@@ -166,8 +166,8 @@ class MLTrainer:
         features = features[expected_features].values  # Adicione .values para converter para numpy array
         
         if not hasattr(self, 'is_scaler_fitted') or not self.is_scaler_fitted:
-            # Fallback: treina com dados mínimos com 5 features
-            dummy_data = np.zeros((1, 5))  # 1 amostra, 5 features
+            # Fallback: treina com dados mínimos com 7 features
+            dummy_data = np.zeros((1, 7))  # 1 amostra, 7 features
             self.scaler.fit(dummy_data)
             self.is_scaler_fitted = True
             log_message("Scaler não treinado - usando fallback com 5 features", 'warning')
