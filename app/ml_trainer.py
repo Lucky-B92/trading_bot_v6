@@ -137,6 +137,8 @@ class MLTrainer:
                 f"Modelo treinado - Acurácia: Treino={train_acc:.2f}, Teste={test_acc:.2f}",
                 'info'
             )
+
+            log_message(f"Modelo treinado com {X.shape[1]} features", 'info')
             
             # Marcar scaler como treinado
             self.is_scaler_fitted = True
@@ -179,3 +181,4 @@ def predict_with_model(df):
     trainer = MLTrainer()
     features = trainer.prepare_features(df)
     return trainer.predict(features)
+
