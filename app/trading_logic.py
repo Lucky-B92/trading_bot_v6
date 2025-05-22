@@ -785,16 +785,16 @@ class TradingBot:
                         # Usar o score já calculado (com RR)
                         score_result = asset['score'] if isinstance(asset['score'], dict) else {'total': asset['score'], 'details': {}}
                         score = score_result['total']
-                        details = score_result['details']
+                        details = score_result.get('details', {})
 
                         score_threshold = config.SCORE_THRESHOLD
                         conditions_met = score >= score_threshold
 
                         log_message = (
                             f"[SCORE] {asset['symbol']} - Score: {score:.2f} | Threshold: {score_threshold} | Conditions Met: {conditions_met} | "
-                            f"RSI: {details['rsi']:.1f} | MACD: {details['macd']:.1f} | Regime: {details['regime']:.1f} | "
-                            f"Patterns: {details['patterns']:.1f} | ML: {details['ml']:.1f} | RR: {details['risk_reward']:.1f} | "
-                            f"EMA8 Daily: {details['ema8_daily']:.1f} | RSI Daily: {details['rsi_daily']:.1f}"
+                            f"RSI: {details.get('rsi', 0):.1f} | MACD: {details.get('macd', 0):.1f} | Regime: {details.get('regime', 0):.1f} | "
+                            f"Patterns: {details.get('patterns', 0):.1f} | ML: {details.get('ml', 0):.1f} | RR: {details.get('risk_reward', 0):.1f} | "
+                            f"EMA8 Daily: {details.get('ema8_daily', 0):.1f} | RSI Daily: {details.get('rsi_daily', 0):.1f}"
                         )
 
                         self.log(log_message)
