@@ -535,7 +535,8 @@ class TradingBot:
                     symbol=symbol,
                     side=side.upper(),
                     type='MARKET',
-                    quantity=amount_adjusted
+                    quantity=amount_adjusted,
+                    entry_price = float(order['fills'][0]['price'])  # ✅ Agora está definido corretamente
                 )
                 self.log(f"ORDEM EXECUTADA: {side} {amount_adjusted} {symbol} @ {price:.4f}")
 
