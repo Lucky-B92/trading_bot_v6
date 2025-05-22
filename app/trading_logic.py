@@ -249,7 +249,7 @@ class TradingBot:
                 self.log(f"Erro no paralelismo: {str(e)} - usando serial", 'error')
                 assets_scores = [analyze_symbol(symbol) for symbol in usdt_pairs if analyze_symbol(symbol) is not None]
 
-            top_assets = sorted(assets_scores, key=lambda x: x['score'], reverse=True)[:n]
+            top_assets = sorted(assets_scores, key=lambda x: x['score']['total'] if isinstance(x['score'], dict) else x['score'], reverse=True)[:n]
             self.log(f"Top {n} ativos: {[a['symbol'] for a in top_assets]}")
             return top_assets
 
