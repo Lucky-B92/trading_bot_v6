@@ -487,19 +487,20 @@ class TradingBot:
             # Atualizar os dados de trade com as informações de confirmação e potenciais
             trade_data = {
                 'symbol': symbol,
-                'open_time': datetime.now(),
-                'open_price': price,
-                'amount': amount_adjusted,
-                'side': side,
-                'status': 'OPEN',
+                'side': 'buy',
+                'open_price': entry_price,
+                'amount': quantity,
                 'stop_loss': stop_loss,
                 'take_profit': take_profit,
-                'ema8_daily': confirmation_data['ema8_daily'],
-                'rsi_daily': confirmation_data['rsi_daily'],
+                'open_time': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                'status': 'open',
+                'ema8_daily': confirmation_data.get('ema8_daily'),
+                'rsi_daily': confirmation_data.get('rsi_daily'),
                 'potential_profit': potential_profit,
                 'potential_loss': potential_loss,
                 'expected_duration': expected_duration,
                 'risk_reward_ratio': risk_reward_ratio,
+                'score': asset['score'] if isinstance(asset['score'], float) else asset['score']['total']  # ✅ novo campo
             }
 
 
@@ -543,8 +544,8 @@ class TradingBot:
                     conn = get_db_connection()
                     conn.execute(
                         '''INSERT INTO trades 
-                        (symbol, side, open_price, amount, stop_loss, take_profit, open_time, status, ema8_daily, rsi_daily, potential_profit, potential_loss, expected_duration, risk_reward_ratio)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                        (symbol, side, open_price, amount, stop_loss, take_profit, open_time, status, ema8_daily, rsi_daily, potential_profit, potential_loss, expected_duration, risk_reward_ratio, score)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                         (
                             trade_data['symbol'],
                             trade_data['side'],
@@ -559,7 +560,8 @@ class TradingBot:
                             trade_data['potential_profit'],
                             trade_data['potential_loss'],
                             trade_data['expected_duration'],
-                            trade_data['risk_reward_ratio']
+                            trade_data['risk_reward_ratio'],
+                            trade_data['score']  # ✅ aqui o campo precisa estar incluído
                         )
                     )
 
