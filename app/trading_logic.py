@@ -213,12 +213,24 @@ class TradingBot:
                     # Obter dados de confirmação diários
                     confirmation_data = self.get_confirmation_data(symbol)
 
+                    # Estimar risco/retorno com base em SL 2% e TP 5%
+                    atr = self._calculate_atr(df).iloc[-1] if not df.empty else 0
+                    stop_loss = price * 0.02  # 2% de SL estimado
+                    take_profit = price * 0.05  # 5% de TP estimado
+
+                    potential_loss = stop_loss
+                    potential_profit = take_profit
+
+                    risk_reward_ratio = potential_profit / potential_loss if potential_loss else 1
+
+
                     score = self.calculate_score(
-                        df['rsi'].iloc[-1],
-                        df['macd'].iloc[-1],
-                        regime,
-                        patterns,
-                        ml_score,
+                        rsi=df['rsi'].iloc[-1],
+                        macd=df['macd'].iloc[-1],
+                        regime=regime,
+                        patterns=patterns,
+                        ml_score=ml_score,
+                        risk_reward_ratio=risk_reward_ratio,
                         ema8_daily=confirmation_data['ema8_daily'],
                         rsi_daily=confirmation_data['rsi_daily']
                     )
