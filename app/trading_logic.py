@@ -311,18 +311,23 @@ class TradingBot:
         }
         
         # Cálculo final ponderado
-        score = (
-            rsi_norm * weights['rsi'] +
-            (macd_norm * 0.5 + 0.5) * weights['macd'] +
-            regime_score * weights['regime'] +
-            pattern_score * weights['patterns'] +
-            ml_score_norm * weights['ml'] +
-            risk_reward_norm * weights['risk_reward'] +
-            ema8_daily_norm * weights['ema8_daily'] +
-            rsi_daily_norm * weights['rsi_daily']
-        )
-        
-        return score * 100  # Retorna entre 0-100
+        score_details = {
+            'rsi': rsi_norm * weights['rsi'] * 100,
+            'macd': (macd_norm * 0.5 + 0.5) * weights['macd'] * 100,
+            'regime': regime_score * weights['regime'] * 100,
+            'patterns': pattern_score * weights['patterns'] * 100,
+            'ml': ml_score_norm * weights['ml'] * 100,
+            'risk_reward': risk_reward_norm * weights['risk_reward'] * 100,
+            'ema8_daily': ema8_daily_norm * weights['ema8_daily'] * 100,
+            'rsi_daily': rsi_daily_norm * weights['rsi_daily'] * 100
+        }
+
+        total_score = sum(score_details.values())
+
+        return {
+            'total': total_score,
+            'details': score_details
+        }
 
         
     def execute_trade(self, symbol, side, amount, stop_loss=None, take_profit=None, close_trade=False):
@@ -766,7 +771,7 @@ class TradingBot:
                         ml_score_check = ml_score > 0.6
 
                         # Calcular o score composto
-                        score = self.calculate_score(
+                        score_result = self.calculate_score(
                             rsi=asset['rsi'],
                             macd=asset['macd'],
                             regime=asset['regime'],
@@ -776,6 +781,9 @@ class TradingBot:
                             rsi_daily=asset.get('rsi_daily')
                         )
 
+                        score = score_result['total']
+                        details = score_result['details']
+
 
                         # Novo critério de compra com base no score
                         score_threshold = config.SCORE_THRESHOLD  # Exemplo: 70
@@ -784,17 +792,11 @@ class TradingBot:
                         # Log detalhado com pontuação e dados de confirmação
                         log_message = (
                             f"[SCORE] {asset['symbol']} - Score: {score:.2f} | Threshold: {score_threshold} | Conditions Met: {conditions_met} | "
-                            f"EMA Cross: {patterns.get('ema_cross')} | "
-                            f"MACD Bullish: {patterns.get('macd_bullish')} | "
-                            f"RSI OK: {patterns.get('rsi_ok')} | "
-                            f"Above Support: {patterns.get('above_support')} | "
-                            f"Volume Spike: {patterns.get('volume_spike')} | "
-                            f"Bullish Engulfing: {patterns.get('bullish_engulfing')} | "
-                            f"ML Score: {ml_score:.2f} | "
-                            f"EMA8 Daily: {asset['ema8_daily'] if 'ema8_daily' in asset else 'N/A'} | "
-                            f"RSI Daily: {asset['rsi_daily'] if 'rsi_daily' in asset else 'N/A'}"
-
+                            f"RSI: {details['rsi']:.1f} | MACD: {details['macd']:.1f} | Regime: {details['regime']:.1f} | "
+                            f"Patterns: {details['patterns']:.1f} | ML: {details['ml']:.1f} | RR: {details['risk_reward']:.1f} | "
+                            f"EMA8 Daily: {details['ema8_daily']:.1f} | RSI Daily: {details['rsi_daily']:.1f}"
                         )
+
 
                         self.log(log_message)
                 
