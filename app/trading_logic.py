@@ -786,9 +786,13 @@ class TradingBot:
                         ml_score_check = ml_score > 0.6
 
                         # Usar o score já calculado (com RR)
-                        score_result = asset['score'] if isinstance(asset['score'], dict) else {'total': asset['score'], 'details': {}}
+                        score_result = {
+                            'total': asset['score'],
+                            'details': asset.get('score_details', {})
+                        }
                         score = score_result['total']
                         details = score_result.get('details', {})
+
 
                         score_threshold = config.SCORE_THRESHOLD
                         conditions_met = score >= score_threshold
