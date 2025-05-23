@@ -66,45 +66,42 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Função para atualizar a tabela de operações abertas
     function updateOpenTradesTable() {
-        fetch('/get_trades?status=open')
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('.open-trades-table tbody');
-                tableBody.innerHTML = '';
-    
-                if (data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="11">Nenhuma operação aberta</td></tr>';
-                    return;
-                }
-    
-                data.forEach(trade => {
-                    const profitClass = trade.profit_pct > 0 ? 'positive' : 'negative';
-                    const row = `
-                        <tr>
-                            <td>${trade.symbol}</td>
-                            <td>${trade.side}</td>
-                            <td>${trade.open_price?.toFixed(4) || ''}</td>
-                            <td>${trade.amount?.toFixed(6) || ''}</td>
-                            <td>${trade.stop_loss?.toFixed(4) || ''}</td>
-                            <td>${trade.take_profit?.toFixed(4) || ''}</td>
-                            <td>${trade.open_time || ''}</td>
-                            <td>${trade.ema8_daily?.toFixed(2) || ''}</td>
-                            <td>${trade.rsi_daily?.toFixed(2) || ''}</td>
-                            <td>${trade.potential_profit !== null && trade.potential_profit !== undefined ? trade.potential_profit.toFixed(2) : ''}</td>
-                            <td>${trade.potential_loss !== null && trade.potential_loss !== undefined ? trade.potential_loss.toFixed(2) : ''}</td>
-                            <td>${trade.expected_duration || ''}</td>
-                            <td>${trade.risk_reward_ratio !== null && trade.risk_reward_ratio !== undefined ? trade.risk_reward_ratio.toFixed(2) : ''}</td>
-                            <td>${trade.score !== null && trade.score !== undefined ? trade.score.toFixed(2) : ''}</td>
-                            <td>
-                                <button onclick="closeTrade('${trade.symbol}')" class="btn btn-danger btn-sm">Vender</button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                });
-            })
-            .catch(err => console.error('Erro ao atualizar operações abertas:', err));
-    }
+    fetch('/get_trades?status=open')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('.open-trades-table tbody');
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="11">Nenhuma operação aberta</td></tr>';
+                return;
+            }
+
+            data.forEach(trade => {
+                const profitClass = trade.profit_pct > 0 ? 'positive' : 'negative';
+                const row = `
+                    <tr>
+                        <td>${trade.symbol}</td>
+                        <td>${trade.side}</td>
+                        <td>${trade.open_price?.toFixed(4) || ''}</td>
+                        <td>${trade.current_price?.toFixed(4) || ''}</td>
+                        <td class="${profitClass}">${trade.profit_pct?.toFixed(2)}%</td>
+                        <td class="${profitClass}">${trade.pnl?.toFixed(2)}</td>
+                        <td>${trade.stop_loss?.toFixed(2) || ''}</td>
+                        <td>${trade.potential_profit?.toFixed(2) || ''}</td>
+                        <td>${trade.potential_loss?.toFixed(2) || ''}</td>
+                        <td>${trade.expected_duration || ''}</td>
+                        <td>
+                            <button onclick="closeTrade('${trade.symbol}')" class="btn btn-danger btn-sm">Vender</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+        })
+        .catch(err => console.error('Erro ao atualizar operações abertas:', err));
+}
+
     
 
     // Função para encerrar uma operação
